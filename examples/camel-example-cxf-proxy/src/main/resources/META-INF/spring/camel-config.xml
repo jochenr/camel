@@ -51,7 +51,8 @@
                    endpointName="s:ReportIncidentEndpoint"
                    serviceName="s:ReportIncidentEndpointService"
                    wsdlURL="etc/report_incident.wsdl"
-                   xmlns:s="http://reportincident.example.camel.apache.org"/>
+                   xmlns:s="http://reportincident.example.camel.apache.org"
+                   />
 
   <!-- this is the Camel route which proxies the real web service and forwards SOAP requests to it -->
   <camelContext xmlns="http://camel.apache.org/schema/spring">
@@ -61,19 +62,30 @@
 
     <endpoint id="callRealWebService" uri="http://localhost:${real.port}/real-webservice?throwExceptionOnFailure=false"/>
 
-    <route>
-      <!-- CXF consumer using MESSAGE format -->
+    <route streamCache="true">
+      <!-- CXF consumer using MESSAGE format
       <from uri="cxf:bean:reportIncident?dataFormat=RAW"/>
+      -->
+      <!-- with PAYLOAD format combined with streaming we see the issue -->
+      <from uri="cxf:bean:reportIncident?dataFormat=PAYLOAD&amp;allowStreaming=true&amp;wrappedStyle=true&amp;properties.schema-validation-enabled=true"/>
+
+      <!--
+      <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+	  -->
+
+
       <!-- log input received -->
       <to uri="log:input"/>
-      <!-- enrich the input by ensure the incidentId parameter is set -->
+
+
+      <!-- <!- - enrich the input by ensure the incidentId parameter is set - ->
       <to uri="bean:enrichBean"/>
-      <!-- Need to remove the http headers which could confuse the http endpoint -->
+      Need to remove the http headers which could confuse the http endpoint
       <removeHeaders pattern="CamelHttp*"/>
-      <!-- send proxied request to real web service -->
+      send proxied request to real web service
       <to uri="ref:callRealWebService"/>
-      <!-- log answer from real web service -->
-      <to uri="log:output"/>
+      log answer from real web service
+      <to uri="log:output"/> -->
     </route>
 
   </camelContext>

@@ -1,0 +1,21 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:rep="http://reportincident.example.camel.apache.org">
+	<soapenv:Header/>
+	<soapenv:Body>
+		<rep:inputReportIncident>
+			<incidentId>12345</incidentId>
+			<incidentDate>2019-03-22</incidentDate>
+			<givenName>Me</givenName>
+			<familyName>Myself</familyName>
+			<summary>problem with xsi namesopace</summary>
+			<details>ns not copied, if streaming allowed</details>
+			<email>nobody@nowhere.com</email>
+			<phone>+49 12 23456</phone>
+			<homeAddress xsi:type="rep:USAddressType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<Line1>234 Lancaseter Av</Line1>
+				<Line2>SmallsVille</Line2>
+				<State>Florida</State>
+				<Zipcode>34543</Zipcode>
+			</homeAddress>
+		</rep:inputReportIncident>
+	</soapenv:Body>
+</soapenv:Envelope>

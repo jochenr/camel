@@ -17,7 +17,6 @@
 package org.apache.camel.example.cxf.proxy;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * A bean to enrich the proxied web service to ensure the input is valid and add additional information
@@ -25,16 +24,40 @@ import org.w3c.dom.Node;
 // START SNIPPET: e1
 public class EnrichBean {
 
-    public Document enrich(Document doc) {
-        Node node = doc.getElementsByTagName("incidentId").item(0);
-        String incident = node.getTextContent();
+    public String enrich(/*Document*/  String doc) {
+//    	System.out.println("in-Document:\n" +  this.getStringFromDocument(doc));
+    	System.out.println("in-Document:\n" +  doc);
 
-        // here we enrich the document by changing the incident id to another value
-        // you can of course do a lot more in your use-case
-        node.setTextContent("456");
-        System.out.println("Incident was " + incident + ", changed to 456");
+
+//        Node node = doc.getElementsByTagName("incidentId").item(0);
+//        String incident = node.getTextContent();
+//
+//        // here we enrich the document by changing the incident id to another value
+//        // you can of course do a lot more in your use-case
+//        node.setTextContent("456");
+//        System.out.println("Incident was " + incident + ", changed to 456");
 
         return doc;
     }
+
+
+//    private String getStringFromDocument(Document doc)
+//    {
+//        try
+//        {
+//           DOMSource domSource = new DOMSource(doc);
+//           StringWriter writer = new StringWriter();
+//           StreamResult result = new StreamResult(writer);
+//           TransformerFactory tf = TransformerFactory.newInstance();
+//           Transformer transformer = tf.newTransformer();
+//           transformer.transform(domSource, result);
+//           return writer.toString();
+//        }
+//        catch(TransformerException ex)
+//        {
+//           ex.printStackTrace();
+//           return null;
+//        }
+//    }
 }
 // END SNIPPET: e1
