@@ -45,6 +45,8 @@
   <!-- bean that enriches the SOAP request -->
   <bean id="enrichBean" class="org.apache.camel.example.cxf.proxy.EnrichBean"/>
 
+  <bean id="failureResponseProcessor" class="org.apache.camel.example.cxf.proxy.FailureResponseProcessor"/>
+
   <!-- this is the CXF web service we use as the front end -->
   <cxf:cxfEndpoint id="reportIncident"
                    address="http://localhost:${proxy.port}/camel-example-cxf-proxy/webservices/incident"
@@ -60,32 +62,33 @@
     <!-- property which contains port number -->
     <propertyPlaceholder id="properties" location="classpath:incident.properties,file:target/custom.properties"/>
 
-    <endpoint id="callRealWebService" uri="http://localhost:${real.port}/real-webservice?throwExceptionOnFailure=false"/>
+    <endpoint id="callRealWebService" uri="http://localhost:${real.port}/real-webservice?throwExceptionOnFailure=true"/>
+
+    <onException useOriginalMessage="true">
+    	<exception>java.lang.Exception</exception>
+    	<handled><constant>false</constant></handled>
+    	<process ref="failureResponseProcessor"/>
+    </onException>
 
     <route streamCache="true">
       <!-- CXF consumer using MESSAGE format
       <from uri="cxf:bean:reportIncident?dataFormat=RAW"/>
       -->
       <!-- with PAYLOAD format combined with streaming we see the issue -->
+      <!-- this way (streaming NOT allowed) the failureResponseProcessor can get the original body
+      <from uri="cxf:bean:reportIncident?dataFormat=PAYLOAD&amp;allowStreaming=false&amp;wrappedStyle=true&amp;properties.schema-validation-enabled=true"/>
+      -->
+      <!-- this way (streaming IS allowed) the failureResponseProcessor CANNOT get the original body -->
       <from uri="cxf:bean:reportIncident?dataFormat=PAYLOAD&amp;allowStreaming=true&amp;wrappedStyle=true&amp;properties.schema-validation-enabled=true"/>
 
-      <!--
-      <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
-	  -->
 
 
-      <!-- log input received -->
-      <to uri="log:input"/>
-
-
-      <!-- <!- - enrich the input by ensure the incidentId parameter is set - ->
-      <to uri="bean:enrichBean"/>
-      Need to remove the http headers which could confuse the http endpoint
+      <!-- Need to remove the http headers which could confuse the http endpoint -->
       <removeHeaders pattern="CamelHttp*"/>
-      send proxied request to real web service
+
+      <!-- send proxied request to real web service -->
       <to uri="ref:callRealWebService"/>
-      log answer from real web service
-      <to uri="log:output"/> -->
+
     </route>
 
   </camelContext>

@@ -12,7 +12,7 @@ You will need to compile this example first:
 ### Run
 
 To run the example type:
-	
+
 	mvn camel:run -Dmaven.test.skip=true
 
 The proxied webservice is located at
@@ -24,13 +24,13 @@ The proxied webservice is located at
 The real webservice is located at
 
 	http://localhost:${real.port}/real-webservice
-	
+
 <http://localhost:9081/real-webservice>
 
 The webservice WSDL is exposed at:
 
 	http://localhost:${proxy.port}/camel-example-cxf-proxy/webservices/incident?wsdl
-	
+
 <http://localhost:9080/camel-example-cxf-proxy/webservices/incident?wsdl>
 
 Because we use dynamic port numbers, you have to check the console to get the used one.
@@ -40,29 +40,34 @@ To make a SOAP call open soapUI or another SOAP query tool and create a new
 project w/WSDL of <http://localhost:${proxy.port}/camel-example-cxf-proxy/webservices/incident?wsdl>.
 Then make SOAP requests of this format:
 
-	<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
-	                  xmlns:rep="http://reportincident.example.camel.apache.org">
-	   <soapenv:Header/>
-	   <soapenv:Body>
-	      <rep:inputReportIncident>
-	         <incidentId></incidentId>
-	         <incidentDate>2011-11-18</incidentDate>
-	         <givenName>Bob</givenName>
-	         <familyName>Smith</familyName>
-	         <summary>Bla bla</summary>
-	         <details>More bla</details>
-	         <email>your@email.org</email>
-	         <phone>12345678</phone>
-	      </rep:inputReportIncident>
-	   </soapenv:Body>
-	</soapenv:Envelope>
+	<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:rep="http://reportincident.example.camel.apache.org">
+	<soapenv:Header/>
+	<soapenv:Body>
+		<rep:inputReportIncident>
+			<incidentId>12345</incidentId>
+			<incidentDate>2019-03-22</incidentDate>
+			<givenName>Me</givenName>
+			<familyName>Myself</familyName>
+			<summary>problem with xsi namesopace</summary>
+			<details>ns not copied, if streaming allowed</details>
+			<email>nobody@nowhere.com</email>
+			<phone>+49 12 23456</phone>
+			<homeAddress xsi:type="rep:USAddressType" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<Line1>234 Lancaseter Av</Line1>
+				<Line2>SmallsVille</Line2>
+				<State>Florida</State>
+				<Zipcode>34543</Zipcode>
+			</homeAddress>
+		</rep:inputReportIncident>
+	</soapenv:Body>
+</soapenv:Envelope>
 
 ### Configuration
 
 You can change `${proxy.port}` and `${real.port}` via configuration file `src/main/resources/incident.properties`
 
 
-### Forum, Help, etc 
+### Forum, Help, etc
 
 If you hit an problems please let us know on the Camel Forums
   <http://camel.apache.org/discussion-forums.html>
